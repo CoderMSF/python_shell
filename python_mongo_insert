@@ -1,0 +1,39 @@
+#!/usr/bin/python2.7
+#coding=utf-8
+import time,datetime
+import pymongo
+from pymongo import MongoClient
+
+client = MongoClient('mongodb://fort:fort@192.168.1.219:27017/fort')
+db = client.fort
+
+def func_time(func):
+    def _wrapper(*args, **kwargs):
+        start = time.time()
+        func(*args, **kwargs)
+        print func.__name__,'run:',time.time()-start
+    return _wrapper
+
+@func_time
+def insert(num):
+    posts = db.userinfo
+    for x in range(num):
+        post = {"_id":str(x),"author":str(x)+"CCL", "description1":"this is a very long description for " + str(x),
+                "description2": "this is a very long description for " + str(x),
+                "description3":"this is a very long description for " + str(x),
+                "description4":"this is a very long description for " + str(x),
+                "description5":"this is a very long description for " + str(x),
+                "text":"My first blog post!",
+                "tags":["mongodb", "python", "pymongo"],
+                "date":datetime.datetime.utcnow()
+        }
+        posts.insert_one(post)
+        if x % 1000 == 0:
+            print "1000! -- %s" % (datetime.datetime.now())
+
+if __name__ == "__main__":
+    num = 10000
+    insert(num)
+
+
+
